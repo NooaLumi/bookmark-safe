@@ -15,13 +15,32 @@ const saveBookmark = async (title, chapter, url) => {
 			.collection("users")
 			.doc(app.auth().currentUser.uid)
 			.collection("bookmarks")
-			.add(bookmark);
+			.add(bookmark)
+			.then((docRef) => {
+				bookmark.id = docRef.id;
+			});
 
 		return bookmark;
 	} catch (err) {
 		console.log(err);
+		return false;
 	}
 };
+
+const deleteBookmark = async (id) => {
+	try {
+		await db
+			.collection("users")
+			.doc(app.auth().currentUser.uid)
+			.collection("bookmarks")
+			.doc(id)
+			.delete();
+		return 0;
+	} catch (err) {
+		console.log(err);
+	}
+};
+
 const getBookmarks = () =>
 	db
 		.collection("users")
@@ -30,4 +49,4 @@ const getBookmarks = () =>
 		.orderBy("updated")
 		.get();
 
-export { saveBookmark, getBookmarks };
+export { saveBookmark, getBookmarks, deleteBookmark };
